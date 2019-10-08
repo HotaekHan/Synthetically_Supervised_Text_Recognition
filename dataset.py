@@ -69,9 +69,9 @@ class listDataset(Dataset):
             return self[index + 1]
         synthText = cv2.resize(synthText, self.img_size, interpolation=cv2.INTER_LINEAR)
 
-        cv2.imshow('ori', img)
-        cv2.imshow('test', synthText)
-        cv2.waitKey(0)
+        # cv2.imshow('ori', img)
+        # cv2.imshow('test', synthText)
+        # cv2.waitKey(0)
 
         # normalize [-1, 1]
         img = img * (2. / 255.) - 1
