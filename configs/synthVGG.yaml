@@ -1,0 +1,30 @@
+data:
+  train: data/VGG90_train.txt
+  valid: data/VGG90_val.txt
+  test: data/VGG90_test.txt
+hyperparameters:
+  batch_size: 32
+  optimizer: Adam
+  lr: 2e-3
+  interval_store_grad: 200000
+  epoch: 1000
+  lr_patience: -1
+  lr_multistep: None
+  random_seed: 3000
+  imgHeight: 32
+  imgWidth: 100
+  max_length: 40
+  labels: 0123456789abcdefghijklmnopqrstuvwxyz
+  is_ignore_case: True
+  lambda_seq: 1
+  lambda_feat_match: 1
+  lambda_recon: 10
+  lambda_ga: 1
+  lambda_fa: 1
+model:
+  model_path: None
+  exp_path: expr/my_model
+  is_finetune: False
+cuda:
+  using_cuda: True
+  gpu_id: 0
