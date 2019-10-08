@@ -231,24 +231,6 @@ def train(epoch):
             encoded_real = crnn.encoder(inputs)
             generated_synth = generator_g(encoded_real)
 
-            if batch_idx == 0:
-                np_synth = generated_synth.detach().cpu().numpy()
-                np_input = inputs.detach().cpu().numpy()
-                for iter_batch in range(np_synth.shape[0]):
-                    npp = np_synth[iter_batch, :, :, :]
-                    npp = (npp + 1) * (255. / 2.)
-                    npp = np.transpose(npp, (1, 2, 0))
-                    npp = npp.astype(np.uint8)
-                    file_name = 'tmp_img_train/' + str(iter_batch) + '.png'
-                    cv2.imwrite(file_name, npp)
-
-                    npp = np_input[iter_batch, :, :, :]
-                    npp = (npp + 1) * (255. / 2.)
-                    npp = np.transpose(npp, (1, 2, 0))
-                    npp = npp.astype(np.uint8)
-                    file_name = 'tmp_img_train/' + str(iter_batch) + '.jpg'
-                    cv2.imwrite(file_name, npp)
-
             # Feature match loss
             feat_match_loss = feat_criterion(encoded_synth, encoded_real)
             feat_match_loss = lambda_feat_match * feat_match_loss
@@ -333,6 +315,10 @@ def train(epoch):
             summary_writer.add_scalar('train_loss/total_loss', total_loss.item(), global_iter_train)
             global_iter_train += 1
 
+            if batch_idx % 1000 == 0:
+                summary_writer.add_images('train/synth', generated_synth.detach().cpu().numpy(), batch_idx)
+                summary_writer.add_images('train/ori', inputs.detach().cpu().numpy(), batch_idx)
+
             if config['hyperparameters']['lr_multistep'] != 'None':
                 scheduler_for_lr.step()
 
@@ -369,24 +355,6 @@ def valid(epoch):
             encoded_synth = crnn.encoder(synths)
             encoded_real = crnn.encoder(inputs)
             generated_synth = generator_g(encoded_real)
-
-            if batch_idx == 0:
-                np_synth = generated_synth.detach().cpu().numpy()
-                np_input = inputs.detach().cpu().numpy()
-                for iter_batch in range(np_synth.shape[0]):
-                    npp = np_synth[iter_batch, :, :, :]
-                    npp = (npp + 1) * (255. / 2.)
-                    npp = np.transpose(npp, (1, 2, 0))
-                    npp = npp.astype(np.uint8)
-                    file_name = 'tmp_img_val/' + str(iter_batch) + '.png'
-                    cv2.imwrite(file_name, npp)
-
-                    npp = np_input[iter_batch, :, :, :]
-                    npp = (npp + 1) * (255. / 2.)
-                    npp = np.transpose(npp, (1, 2, 0))
-                    npp = npp.astype(np.uint8)
-                    file_name = 'tmp_img_val/' + str(iter_batch) + '.jpg'
-                    cv2.imwrite(file_name, npp)
 
             # Feature match loss
             feat_match_loss = feat_criterion(encoded_synth, encoded_real)
@@ -452,6 +420,11 @@ def valid(epoch):
             summary_writer.add_scalar('valid_loss/img_dis_loss', img_dis_loss.item(), global_iter_valid)
             summary_writer.add_scalar('valid_loss/img_enc_loss', img_enc_loss.item(), global_iter_valid)
             summary_writer.add_scalar('valid_loss/total_loss', total_loss.item(), global_iter_valid)
+
+            if batch_idx % 1000 == 0:
+                summary_writer.add_images('valid/synth', generated_synth.detach().cpu().numpy(), batch_idx)
+                summary_writer.add_images('valid/ori', inputs.detach().cpu().numpy(), batch_idx)
+
             global_iter_valid += 1
 
     print('[Valid] avg. valid loss: ' + str(avg_valid_loss))
