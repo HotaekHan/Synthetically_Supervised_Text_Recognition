@@ -39,15 +39,17 @@ class Encoder(nn.Module):
         self.conv6_bn = nn.BatchNorm2d(conv_maps[5])
         self.conv7 = nn.Conv2d(conv_maps[5], conv_maps[6], kernel_size=3, stride=(2, 1), padding=1)
 
+        self.negative_slope = 0.01
+
     def forward(self, inputs):
         # input -> 3x32x100'
-        out = self.conv1(inputs)
-        out = self.conv2(F.leaky_relu(out, negative_slope=0.2))
-        out = self.conv3(F.leaky_relu(out, negative_slope=0.2))
-        out = self.conv4(F.leaky_relu(out, negative_slope=0.2))
-        out = self.conv5_bn(self.conv5(F.leaky_relu(out, negative_slope=0.2)))
-        out = self.conv6_bn(self.conv6(F.leaky_relu(out, negative_slope=0.2)))
-        out = self.conv7(F.leaky_relu(out, negative_slope=0.2))
+        out = F.leaky_relu(self.conv1(inputs), negative_slope=self.negative_slope)
+        out = F.leaky_relu(self.conv2(out), negative_slope=self.negative_slope)
+        out = F.leaky_relu(self.conv3(out), negative_slope=self.negative_slope)
+        out = F.leaky_relu(self.conv4(out), negative_slope=self.negative_slope)
+        out = F.leaky_relu(self.conv5_bn(self.conv5(out)), negative_slope=self.negative_slope)
+        out = F.leaky_relu(self.conv6_bn(self.conv6(out)), negative_slope=self.negative_slope)
+        out = F.leaky_relu(self.conv7(out), negative_slope=self.negative_slope)
 
         return out
 
