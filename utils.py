@@ -51,7 +51,7 @@ class LabelEncoder(object):
             else:
                 text_encoded.append(self.dict[char])
 
-        return (torch.IntTensor(text_encoded), torch.IntTensor(length))
+        return (torch.tensor(text_encoded, dtype=torch.long), torch.tensor(length, dtype=torch.long))
 
     def decode(self, labels, length, raw=False):
         """Decode encoded texts back into strs.

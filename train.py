@@ -212,7 +212,7 @@ def train(epoch):
     with torch.set_grad_enabled(True):
         for batch_idx, (inputs, targets, synths, lengths, imgpaths) in enumerate(train_loader):
             inputs = inputs.to(device)
-            # targets = targets.to(device)
+            targets = targets.to(device)
             synths = synths.to(device)
 
             # init optimizers
@@ -222,7 +222,7 @@ def train(epoch):
             # Sequence loss
             preds = crnn(inputs)
 
-            preds_steps = torch.tensor([preds.size(0)] * preds.size(1), dtype=torch.int32)
+            preds_steps = torch.tensor([preds.size(0)] * preds.size(1), dtype=torch.long)
             seq_loss = seq_criterion(preds, targets, preds_steps, lengths)
             seq_loss = lambda_seq * seq_loss
 
@@ -238,7 +238,6 @@ def train(epoch):
             # Reconstruction loss
 
             recon_loss = recon_criterion(generated_synth, synths)
-            recon_loss = recon_loss / batch_size
             recon_loss = lambda_recon * recon_loss
 
             # adversarial learning
@@ -341,13 +340,13 @@ def valid(epoch):
     with torch.set_grad_enabled(False):
         for batch_idx, (inputs, targets, synths, lengths, imgpaths) in enumerate(valid_loader):
             inputs = inputs.to(device)
-            # targets = targets.to(device)
+            targets = targets.to(device)
             synths = synths.to(device)
 
             # Sequence loss
             preds = crnn(inputs)
 
-            preds_steps = torch.tensor([preds.size(0)] * preds.size(1), dtype=torch.int32)
+            preds_steps = torch.tensor([preds.size(0)] * preds.size(1), dtype=torch.long)
             seq_loss = seq_criterion(preds, targets, preds_steps, lengths)
             seq_loss = lambda_seq * seq_loss
 
@@ -363,7 +362,6 @@ def valid(epoch):
             # Reconstruction loss
 
             recon_loss = recon_criterion(generated_synth, synths)
-            recon_loss = recon_loss / batch_size
             recon_loss = lambda_recon * recon_loss
 
             # adversarial learning

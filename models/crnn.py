@@ -82,6 +82,7 @@ class CRNN(nn.Module):
 
         self.encoder = Encoder()
         self.decoder = Decoder(num_classes=num_classes)
+        self.log_softmax = nn.LogSoftmax(dim=2)
 
         self._do_initializer()
 
@@ -109,6 +110,7 @@ class CRNN(nn.Module):
         # input -> 1x32x100
         out = self.encoder(inputs)
         out = self.decoder(out)
+        out = self.log_softmax(out)
 
         return out
 
